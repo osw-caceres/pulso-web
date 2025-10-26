@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+body {
+  background: radial-gradient(1200px 800px at 70% -10%, #fff 0%, #FAF7F2 60%, #FAF7F2 100%);
+  display: grid;
+  place-items: center;
+  min-height: 100svh;
+}
