@@ -1,9 +1,18 @@
 'use client';
 
 import Link from "next/link";
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 export default function ConfirmEmailPage() {
+  return (
+    <Suspense fallback={<main style={{padding: 24, textAlign: "center"}}>Cargando…</main>}>
+      <ConfirmEmailContent />
+    </Suspense>
+  );
+}
+
+function ConfirmEmailContent() {
   const searchParams = useSearchParams();
   const email = searchParams.get('email');
 
