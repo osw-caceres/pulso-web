@@ -1,0 +1,31 @@
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: var(--pulso-bg);
+  background: radial-gradient(circle at 50% 50%, #fff 0%, var(--pulso-bg) 60%);
+}
+
+/* Override button hover for auth pages */
+.auth-container .btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(229, 57, 53, .3);
+}
+
+.auth-container .btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Add focus styles for accessibility */
+.auth-container input:focus {
+  outline: 2px solid #E53935;
+  outline-offset: 2px;
+}
+
+.auth-container a:focus {
+  outline: 2px solid #E53935;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
