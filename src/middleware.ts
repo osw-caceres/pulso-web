@@ -32,6 +32,18 @@ export async function middleware(request: NextRequest) {
 
   // Allow access to complete-profile for authenticated users
   const isCompleteProfilePath = request.nextUrl.pathname.startsWith('/register/complete-profile');
+  const isConfirmEmailPath = request.nextUrl.pathname.startsWith('/confirm-email');
+  const isAuthCallback = request.nextUrl.pathname.startsWith('/auth/callback');
+  
+  // Allow auth callback without checking authentication
+  if (isAuthCallback) {
+    return supabaseResponse;
+  }
+
+  // Allow confirm-email page for everyone
+  if (isConfirmEmailPath) {
+    return supabaseResponse;
+  }
   
   // Protected routes - redirect to login if not authenticated
   if (!user && !request.nextUrl.pathname.startsWith('/login') && !request.nextUrl.pathname.startsWith('/register')) {

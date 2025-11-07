@@ -74,8 +74,8 @@ export default function RegisterPage() {
       }
 
       if (authData.user) {
-        // Redirect to complete profile page
-        router.push('/register/complete-profile');
+        // Redirect to email confirmation page
+        router.push(`/confirm-email?email=${encodeURIComponent(data.email)}`);
       }
     } catch (error) {
       console.error(error);
