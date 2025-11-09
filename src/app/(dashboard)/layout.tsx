@@ -20,11 +20,11 @@ export default async function DashboardLayout({
   // Fetch user profile from user_info table
   const { data: userInfo } = await supabase
     .from('user_info')
-    .select('name, last_name, email')
+    .select('name, last_name, email, is_complete')
     .eq('id', authUser.id)
     .single();
 
-  if (!userInfo) {
+  if (!userInfo || !userInfo.is_complete) {
     redirect('/register/complete-profile');
   }
 

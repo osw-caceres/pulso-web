@@ -26,7 +26,7 @@ export default function CompleteProfilePage() {
     const checkUser = async () => {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
-
+      
       if (!user) {
         // If no user, redirect to register
         router.push('/register');
@@ -121,7 +121,7 @@ export default function CompleteProfilePage() {
       // Insert user profile
       const { error: insertError } = await supabase
         .from('user_info')
-        .update({
+        .insert({
           id: userId,
           name: data.name,
           last_name: data.lastName,
@@ -134,8 +134,8 @@ export default function CompleteProfilePage() {
           next_date: nextDate,
           role: 'user',
           status: 'active',
-          is_complete: true,
-        }).eq('id', userId);
+          is_complete: true, // Mark profile as complete
+        });
 
       if (insertError) {
         console.error('Insert error:', insertError);

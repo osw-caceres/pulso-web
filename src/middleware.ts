@@ -57,18 +57,18 @@ export async function middleware(request: NextRequest) {
     // Check if user has completed their profile
     const { data: profile } = await supabase
       .from('user_info')
-      .select('id')
+      .select('is_complete')
       .eq('id', user.id)
       .single();
 
-    if (!profile) {
-      // No profile exists, redirect to complete-profile
+    if (!profile || !profile.is_complete) {
+      // No profile or incomplete, redirect to complete-profile
       const url = request.nextUrl.clone()
       url.pathname = '/register/complete-profile'
       return NextResponse.redirect(url)
     }
 
-    // Profile exists, redirect to dashboard
+    // Profile exists and is complete, redirect to dashboard
     const url = request.nextUrl.clone()
     url.pathname = '/'
     return NextResponse.redirect(url)
@@ -82,8 +82,8 @@ export async function middleware(request: NextRequest) {
       .eq('id', user.id)
       .single();
 
-    if (!profile?.is_complete) {
-      // No profile, redirect to complete-profile
+    if (!profile || !profile.is_complete) {
+      // No profile or incomplete, redirect to complete-profile
       const url = request.nextUrl.clone()
       url.pathname = '/register/complete-profile'
       return NextResponse.redirect(url)
