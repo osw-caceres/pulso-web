@@ -13,7 +13,10 @@ create table public.user_info (
   status text null default 'active'::text,
   email text null,
   is_complete boolean not null default false,
+  id_nivel uuid null default 'bf866e5b-ae68-4c5c-a1a4-3741db9a6ef1'::uuid,
+  puntos bigint null default '0'::bigint,
   constraint usuarios_pkey primary key (id),
+  constraint user_info_id_nivel_fkey foreign KEY (id_nivel) references nivel (id),
   constraint usuarios_id_fkey foreign KEY (id) references auth.users (id)
 ) TABLESPACE pg_default;
 
@@ -42,7 +45,7 @@ create table public.locacion (
   constraint locacion_id_entidad_fkey foreign KEY (id_entidad) references entidad (id)
 ) TABLESPACE pg_default;
 
-create table public.campaña (
+create table public.campana (
   id uuid not null default gen_random_uuid (),
   created_at timestamp with time zone not null default now(),
   tipo character varying null,
@@ -66,4 +69,21 @@ create table public.registro (
   constraint registro_pkey primary key (id),
   constraint registro_id_campana_fkey foreign KEY (id_campana) references "campaña" (id),
   constraint registro_id_usuario_fkey foreign KEY (id_usuario) references user_info (id)
+) TABLESPACE pg_default;
+
+create table public.nivel (
+  id uuid not null default gen_random_uuid (),
+  created_at timestamp with time zone not null default now(),
+  nombre character varying null,
+  puntaje_minimo bigint null,
+  constraint nivel_pkey primary key (id)
+) TABLESPACE pg_default;
+
+create table public.premio (
+  id uuid not null default gen_random_uuid (),
+  created_at timestamp with time zone not null default now(),
+  puntaje bigint null,
+  id_usuario uuid null,
+  constraint premio_pkey primary key (id),
+  constraint premio_id_usuario_fkey foreign KEY (id_usuario) references user_info (id)
 ) TABLESPACE pg_default;

@@ -196,22 +196,6 @@ export default function CampaignsPage() {
               <input id="date" type="date" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} />
             </div>
 
-            <div className="field">
-              <label htmlFor="city">Ciudad</label>
-              <input id="city" type="text" placeholder="Guatemala, Mixco, Quetzaltenango…" value={selectedCity} onChange={(e) => setSelectedCity(e.target.value)} />
-            </div>
-
-            <div className="field">
-              <label htmlFor="distance">Distancia (km)</label>
-              <select id="distance" value={selectedDistance} onChange={(e) => setSelectedDistance(e.target.value)}>
-                <option value="">Cualquiera</option>
-                <option value="5">≤ 5 km</option>
-                <option value="10">≤ 10 km</option>
-                <option value="25">≤ 25 km</option>
-                <option value="50">≤ 50 km</option>
-              </select>
-            </div>
-
             <div className="actions">
               <button className="btn" type="button" onClick={applyFilters}>Aplicar</button>
               <button className="btn-ghost" type="button" onClick={clearFilters}>Limpiar</button>

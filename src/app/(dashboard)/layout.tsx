@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { createClient } from '@/src/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { LogoutButton } from './components/LogoutButton';
+import { Navigation } from './components/Navigation';
 import './dashboard.css';
 
 export default async function DashboardLayout({
@@ -20,7 +21,7 @@ export default async function DashboardLayout({
   // Fetch user profile from user_info table
   const { data: userInfo } = await supabase
     .from('user_info')
-    .select('name, last_name, email, is_complete')
+    .select('name, last_name, email, is_complete, role')
     .eq('id', authUser.id)
     .single();
 
@@ -30,10 +31,12 @@ export default async function DashboardLayout({
 
   const userName = userInfo.name || authUser.email?.split('@')[0] || 'Usuario';
   const userInitials = userName.charAt(0).toUpperCase();
+  const userRole = userInfo.role;
 
   const user = {
     name: userName,
-    initials: userInitials
+    initials: userInitials,
+    role: userRole
   };
 
   return (
@@ -48,17 +51,14 @@ export default async function DashboardLayout({
           <span className="name">Pulso</span>
         </Link>
 
-        <nav>
-          <Link href="/" className="active">Inicio</Link>
-          <Link href="/campaigns">Buscar campañas</Link>
-          <Link href="/history">Historial</Link>
-          <Link href="/profile">Perfil</Link>
-          <Link href="/help">Ayuda</Link>
-        </nav>
+        <Navigation userRole={user.role} />
 
         <div className="profile">
           <div className="avatar">{user.initials}</div>
           <span>{user.name}</span>
+          {user.role === 'admin' && (
+            <span className="admin-badge">Admin</span>
+          )}
           <LogoutButton />
         </div>
       </aside>

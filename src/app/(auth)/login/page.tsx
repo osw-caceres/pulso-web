@@ -31,6 +31,8 @@ export default function LoginPage() {
         return;
       }
 
+      console.log({userData})
+
       if (userData.user) {
         // Redirect to dashboard after successful login
         router.push('/');

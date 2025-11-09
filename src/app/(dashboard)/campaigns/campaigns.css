@@ -353,3 +353,42 @@
     width: 100%;
   }
 }
+
+/* === NAV OFFSET & LAYOUT FIX === */
+:root {
+  /* Adjust this to your real nav height */
+  --nav-height: 64px;
+}
+
+.campaigns-shell {
+  padding-top: var(--nav-height); /* pushes everything below the navbar */
+  width: 100%;
+  display: grid;
+  place-items: center;
+}
+
+/* Center your content since you already use max-width */
+.campaigns-header,
+.campaigns-layout {
+  margin: 0 auto;
+}
+
+/* Optional shadow/spacing tweak */
+.campaigns-header {
+  position: relative;
+  z-index: 2; /* ensures it stays above backgrounds but below nav */
+}
+
+/* === STICKY FILTERS (optional, keeps sidebar fixed below nav) === */
+@media (min-width: 901px) {
+  .filters {
+    position: sticky;
+    top: calc(var(--nav-height) + 12px); /* offset by nav height */
+    z-index: 1;
+  }
+}
+
+/* === OPTIONAL: ensure nav has higher stacking order === */
+.site-nav {
+  z-index: 1000; /* your global navigation bar */
+}

@@ -28,7 +28,7 @@ export function RegisterButton({
         .insert({
           id_usuario: userId,
           id_campana: campaignId,
-          status: 'inscrita',
+          status: 'inscrito',
         });
 
       if (insertError) {
