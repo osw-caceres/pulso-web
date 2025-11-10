@@ -31,11 +31,21 @@ export default function LoginPage() {
         return;
       }
 
-      console.log({userData})
+      const { id } = userData.user
+
+      const { data: userInfo } = await supabase
+    .from('user_info')
+    .select('role')
+    .eq('id', id)
+    .single();
+
+      console.log({userInfo})
 
       if (userData.user) {
         // Redirect to dashboard after successful login
-        router.push('/');
+
+        const route = userInfo?.role === 'admin' ? '/admin' : '/';
+        router.push(route);
         router.refresh();
       }
     } catch (error) {
