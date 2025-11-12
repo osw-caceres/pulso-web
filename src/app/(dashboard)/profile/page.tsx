@@ -75,13 +75,15 @@ export default async function ProfilePage() {
   const points = userInfo?.puntos || 0;
   const donations = donationCount || 0;
 
+  const nivelUsuario = userInfo?.nivel as any
+
   const {data: nivelData } = await supabase
   .from('nivel')
   .select(`
     puntaje_minimo,
     nombre
     `)
-  .eq('orden', userInfo?.nivel?.orden + 1 )
+  .eq('orden', nivelUsuario.orden + 1 )
   .single()
 
   console.log({nivelData})
