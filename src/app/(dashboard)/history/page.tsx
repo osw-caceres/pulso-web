@@ -9,7 +9,7 @@ interface Registration {
   created_at: string;
   status: string;
   fecha_validacion: string | null;
-  campana: Campaign[];
+  campana: Campaign;
 }
 
 interface Campaign {
@@ -17,7 +17,7 @@ interface Campaign {
   tipo: string;
   componente: string;
   fecha_inicio: string;
-  locacion: Location[];
+  locacion: Location;
 }
 
 interface Location {
