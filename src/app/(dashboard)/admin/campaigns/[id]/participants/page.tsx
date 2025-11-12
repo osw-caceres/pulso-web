@@ -372,7 +372,6 @@ export default function ParticipantsPage({ params }: { params: { id: string } })
           
           <div className="summary-details">
             <div className="detail-item">
-              <span className="detail-icon">📍</span>
               <span>{locacion?.nombre || 'Sin ubicación'}</span>
             </div>
             <div className="detail-item">
@@ -450,7 +449,7 @@ export default function ParticipantsPage({ params }: { params: { id: string } })
               <tr>
                 <th>Participante</th>
                 <th>Tipo de sangre</th>
-                <th>Contacto</th>
+                <th>Correo</th>
                 <th>Fecha de registro</th>
                 <th>Estado</th>
                 {campaignActive && <th>Acciones</th>}
@@ -471,7 +470,7 @@ export default function ParticipantsPage({ params }: { params: { id: string } })
                         <div className="name-primary">
                           {user.name} {user.last_name}
                         </div>
-                        <div className="name-secondary">{user.email}</div>
+                        
                       </div>
                     </td>
                     <td>
@@ -482,7 +481,7 @@ export default function ParticipantsPage({ params }: { params: { id: string } })
                       )}
                     </td>
                     <td>
-                      {user.phone || <span className="text-muted">Sin teléfono</span>}
+                      <div className="name-secondary">{user.email}</div>
                     </td>
                     <td className="text-muted">
                       {formatDate(participant.created_at)}
