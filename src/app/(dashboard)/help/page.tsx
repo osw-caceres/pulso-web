@@ -34,10 +34,6 @@ export default function HelpPage() {
     <div className="help-container">
       <section className="help-header">
         <h1>Ayuda, dudas y preguntas frecuentes</h1>
-        <p className="subtitle">
-          Encuentra respuestas rápidas sobre donaciones, inscripciones y validaciones. 
-          Si necesitas más ayuda, contáctanos.
-        </p>
       </section>
 
       <div className="help-grid">

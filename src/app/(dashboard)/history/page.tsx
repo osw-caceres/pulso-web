@@ -135,9 +135,6 @@ export default function HistoryPage() {
     <div className="history-container">
       <section className="history-header">
         <h1>Historial de campañas participadas</h1>
-        <p className="subtitle">
-          Consulta las campañas en las que has participado y su estado de validación.
-        </p>
       </section>
 
       <section className="card">

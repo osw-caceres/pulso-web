@@ -144,9 +144,6 @@ export default function CreateLocationPage() {
           ← Volver a ubicaciones
         </Link>
         <h1>Crear nueva ubicación</h1>
-        <p className="subtitle">
-          Agrega una nueva ubicación donde se realizarán campañas de donación
-        </p>
       </div>
 
       <div className="form-card">

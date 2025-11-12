@@ -146,7 +146,6 @@ export default function AdminCampaignsPage() {
       <div className="campaigns-header">
         <div className="header-content">
           <h1>Gestión de Campañas</h1>
-          <p className="subtitle">Administra las campañas de donación</p>
         </div>
         <Link href="/admin/campaigns/create">
           <button className="btn-red">+ Nueva campaña</button>
@@ -290,12 +289,12 @@ export default function AdminCampaignsPage() {
                     <>
                       <Link href={`/admin/campaigns/${campaign.id}/participants`}>
                         <button className="btn-ghost-small">
-                          👥 Participantes
+                          Participantes
                         </button>
                       </Link>
                       <Link href={`/admin/campaigns/${campaign.id}`}>
                         <button className="btn-ghost-small">
-                          📋 Ver detalles
+                          Ver detalles
                         </button>
                       </Link>
                     </>

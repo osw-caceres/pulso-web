@@ -16,15 +16,13 @@ export function Navigation({ userRole }: NavigationProps) {
 
     return (
         <nav>
-
-
             {isAdmin ? (
                 <>
-                    <Link
-                        href="/admin"
-                        className={isActive('/') ? 'active' : ''}
+                                    <Link
+                        href="/admin/campaigns"
+                        className={isActive('/admin/campaigns') ? 'active' : ''}
                     >
-                        Inicio
+                        Campañas activas
                     </Link>
                     <Link
                         href="/admin/campaigns/create"
@@ -32,29 +30,18 @@ export function Navigation({ userRole }: NavigationProps) {
                     >
                         Crear campaña
                     </Link>
-                    <Link
-                        href="/admin/campaigns"
-                        className={isActive('/admin/campaigns') ? 'active' : ''}
-                    >
-                        Campañas activas
-                    </Link>
+
                     <Link
                         href="/admin/locations/create"
                         className={isActive('/admin/locations/create') ? 'active' : ''}
                     >
-                        Crear locacion
+                        Crear ubicacion
                     </Link>
                     <Link
                         href="/admin/locations"
                         className={isActive('/admin/locations') ? 'active' : ''}
                     >
-                        Ver locaciones
-                    </Link>
-                    <Link
-                        href="/admin/history"
-                        className={isActive('/admin/history') ? 'active' : ''}
-                    >
-                        Historial
+                        Ver ubicaciones
                     </Link>
                 </>
             ) : (

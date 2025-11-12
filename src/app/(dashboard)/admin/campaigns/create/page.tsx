@@ -26,6 +26,14 @@ const DONATION_COMPONENTS = [
   { value: 'Plaquetas', label: 'Plaquetas' },
   { value: 'Plasma', label: 'Plasma' },
   { value: 'Glóbulos rojos', label: 'Glóbulos rojos' },
+  { value: 'A+', label: 'A+'},
+  { value: 'A-', label: 'A-'},
+  { value: 'B+', label: 'B+'},
+  { value: 'B-', label: 'B-'},
+  { value: 'AB+', label: 'AB+'},
+  { value: 'AB-', label: 'AB-'},
+  { value: 'O+', label: 'O+'},
+  { value: 'O-', label: 'O-'},
 ];
 
 export default function CreateCampaignPage() {
@@ -185,9 +193,6 @@ export default function CreateCampaignPage() {
           ← Volver a campañas
         </Link>
         <h1>Crear nueva campaña</h1>
-        <p className="subtitle">
-          Organiza una nueva jornada de donación de sangre
-        </p>
       </div>
 
       <div className="form-card">

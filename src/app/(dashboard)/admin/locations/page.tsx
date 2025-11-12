@@ -80,7 +80,6 @@ export default function LocationsPage() {
       <div className="locations-header">
         <div className="header-content">
           <h1>Ubicaciones</h1>
-          <p className="subtitle">Gestiona las ubicaciones donde se realizan campañas de donación</p>
         </div>
         <Link href="/admin/locations/create">
           <button className="btn-red">+ Nueva ubicación</button>
