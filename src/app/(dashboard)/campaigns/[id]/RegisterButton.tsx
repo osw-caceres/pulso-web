@@ -22,13 +22,26 @@ export function RegisterButton({
 
       const supabase = createClient();
 
-      // Insert registration
+      // Generate unique validation code
+      const generateValidationCode = () => {
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Exclude similar characters
+        let code = '';
+        for (let i = 0; i < 8; i++) {
+          code += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return code;
+      };
+
+      const validationCode = generateValidationCode();
+
+      // Insert registration with validation code
       const { error: insertError } = await supabase
         .from('registro')
         .insert({
           id_usuario: userId,
           id_campana: campaignId,
-          status: 'inscrito',
+          status: 'inscrita',
+          validation_code: validationCode,
         });
 
       if (insertError) {
@@ -59,7 +72,7 @@ export function RegisterButton({
         disabled={loading}
         className="btn-register"
       >
-        {loading ? 'Inscribiendo...' : 'Inscribirse en esta campaña'}
+        {loading ? 'Inscribiendo...' : '🩸 Inscribirse en esta campaña'}
       </button>
       <p className="register-note">
         Al inscribirte, confirmas que cumples con todos los requisitos para donar sangre.

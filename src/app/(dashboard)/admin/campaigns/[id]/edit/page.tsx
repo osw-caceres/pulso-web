@@ -2,9 +2,9 @@
 
 import { createClient } from "@/src/lib/supabase/client";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import './campaign-form.css';
+import '../../create/campaign-form.css';
 
 interface Locacion {
   id: string;
@@ -13,6 +13,18 @@ interface Locacion {
   entidad: {
     nombre: string;
   }[] | null;
+}
+
+interface Campaign {
+  id: string;
+  nombre: string;
+  tipo: string;
+  componente: string;
+  descripcion: string | null;
+  fecha_inicio: string;
+  fecha_fin: string;
+  status: string;
+  id_locacion: string;
 }
 
 const CAMPAIGN_TYPES = [
@@ -28,12 +40,16 @@ const DONATION_COMPONENTS = [
   { value: 'Glóbulos rojos', label: 'Glóbulos rojos' },
 ];
 
-export default function CreateCampaignPage() {
+export default function EditCampaignPage({ params }: { params: { id: string } }) {
   const router = useRouter();
+     const routeParams = useParams<{ id: string | string[] }>();
+    const id = Array.isArray(routeParams.id) ? routeParams.id[0] : routeParams.id; 
+    
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [locaciones, setLocaciones] = useState<Locacion[]>([]);
-  const [loadingLocaciones, setLoadingLocaciones] = useState(true);
+  const [loadingData, setLoadingData] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
   const [formData, setFormData] = useState({
     nombre: '',
@@ -45,16 +61,64 @@ export default function CreateCampaignPage() {
     fechaFin: '',
     horaFin: '',
     idLocacion: '',
+    status: 'active',
   });
 
   useEffect(() => {
-    fetchLocaciones();
-  }, []);
+    fetchData(id);
+  }, [id]);
 
-  const fetchLocaciones = async () => {
+  const fetchData = async (campId: string) => {
     try {
+      setLoadingData(true);
       const supabase = createClient();
-      const { data, error } = await supabase
+
+      // Fetch campaign
+      const { data: campaign, error: campaignError } = await supabase
+        .from('campana')
+        .select('*')
+        .eq('id', campId)
+        .single();
+
+      if (campaignError || !campaign) {
+        console.error('Error fetching campaign:', campaignError);
+        setNotFound(true);
+        return;
+      }
+
+      // Parse dates
+      const fechaInicio = new Date(campaign.fecha_inicio);
+      const fechaFin = new Date(campaign.fecha_fin);
+
+      // Format dates for input fields
+      const formatDate = (date: Date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+
+      const formatTime = (date: Date) => {
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${hours}:${minutes}`;
+      };
+
+      setFormData({
+        nombre: campaign.nombre || '',
+        tipo: campaign.tipo || '',
+        componente: campaign.componente || '',
+        descripcion: campaign.descripcion || '',
+        fechaInicio: formatDate(fechaInicio),
+        horaInicio: formatTime(fechaInicio),
+        fechaFin: formatDate(fechaFin),
+        horaFin: formatTime(fechaFin),
+        idLocacion: campaign.id_locacion || '',
+        status: campaign.status || 'active',
+      });
+
+      // Fetch locations
+      const { data: locacionesData, error: locacionesError } = await supabase
         .from('locacion')
         .select(`
           id,
@@ -67,16 +131,17 @@ export default function CreateCampaignPage() {
         .eq('status', 'active')
         .order('nombre');
 
-      if (error) {
-        console.error('Error fetching locations:', error);
+      if (locacionesError) {
+        console.error('Error fetching locations:', locacionesError);
         return;
       }
 
-      setLocaciones(data || []);
+      setLocaciones(locacionesData || []);
     } catch (error) {
       console.error('Unexpected error:', error);
+      setNotFound(true);
     } finally {
-      setLoadingLocaciones(false);
+      setLoadingData(false);
     }
   };
 
@@ -127,12 +192,6 @@ export default function CreateCampaignPage() {
       return false;
     }
 
-    const now = new Date();
-    if (inicio < now) {
-      setError('La fecha de inicio debe ser en el futuro');
-      return false;
-    }
-
     return true;
   };
 
@@ -150,9 +209,9 @@ export default function CreateCampaignPage() {
       const fechaInicio = new Date(`${formData.fechaInicio}T${formData.horaInicio}`).toISOString();
       const fechaFin = new Date(`${formData.fechaFin}T${formData.horaFin}`).toISOString();
 
-      const { error: insertError } = await supabase
+      const { error: updateError } = await supabase
         .from('campana')
-        .insert({
+        .update({
           nombre: formData.nombre.trim(),
           tipo: formData.tipo,
           componente: formData.componente,
@@ -160,12 +219,13 @@ export default function CreateCampaignPage() {
           fecha_inicio: fechaInicio,
           fecha_fin: fechaFin,
           id_locacion: formData.idLocacion,
-          status: 'active',
-        });
+          status: formData.status,
+        })
+        .eq('id', id);
 
-      if (insertError) {
-        console.error('Insert error:', insertError);
-        setError('Error al crear la campaña. Por favor intenta de nuevo.');
+      if (updateError) {
+        console.error('Update error:', updateError);
+        setError('Error al actualizar la campaña. Por favor intenta de nuevo.');
         return;
       }
 
@@ -178,15 +238,101 @@ export default function CreateCampaignPage() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!confirm('¿Estás seguro de que deseas eliminar esta campaña? Esta acción no se puede deshacer.')) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const supabase = createClient();
+
+      const { error: deleteError } = await supabase
+        .from('campana')
+        .delete()
+        .eq('id', id);
+
+      if (deleteError) {
+        console.error('Delete error:', deleteError);
+        setError('Error al eliminar la campaña. Puede tener registros asociados.');
+        return;
+      }
+
+      router.push('/admin/campaigns');
+    } catch (error) {
+      console.error('Unexpected error:', error);
+      setError('Ocurrió un error inesperado.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancel = async () => {
+    if (!confirm('¿Deseas cancelar esta campaña? Esto la marcará como inactiva.')) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const supabase = createClient();
+
+      const { error: updateError } = await supabase
+        .from('campana')
+        .update({ status: 'cancelled' })
+        .eq('id', id);
+
+      if (updateError) {
+        console.error('Cancel error:', updateError);
+        setError('Error al cancelar la campaña.');
+        return;
+      }
+
+      router.push('/admin/campaigns');
+    } catch (error) {
+      console.error('Unexpected error:', error);
+      setError('Ocurrió un error inesperado.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loadingData) {
+    return (
+      <div className="campaign-form-container">
+        <div className="loading-state" style={{ textAlign: 'center', padding: '60px' }}>
+          Cargando campaña...
+        </div>
+      </div>
+    );
+  }
+
+  if (notFound) {
+    return (
+      <div className="campaign-form-container">
+        <div className="error-state" style={{ textAlign: 'center', padding: '60px' }}>
+          <h2>Campaña no encontrada</h2>
+          <p>La campaña que buscas no existe o fue eliminada.</p>
+          <Link href="/admin/campaigns">
+            <button className="btn-red">Volver a campañas</button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="campaign-form-container">
       <div className="form-header">
         <Link href="/admin/campaigns" className="back-link">
           ← Volver a campañas
         </Link>
-        <h1>Crear nueva campaña</h1>
+        <h1>Editar campaña</h1>
         <p className="subtitle">
-          Organiza una nueva jornada de donación de sangre
+          Actualiza la información de esta campaña
         </p>
       </div>
 
@@ -215,9 +361,6 @@ export default function CreateCampaignPage() {
                 disabled={loading}
                 required
               />
-              <p className="field-hint">
-                Nombre descriptivo que identifique esta campaña
-              </p>
             </div>
 
             <div className="field-row">
@@ -278,6 +421,24 @@ export default function CreateCampaignPage() {
                 disabled={loading}
               />
             </div>
+
+            <div className="field">
+              <label htmlFor="status">Estado</label>
+              <select
+                id="status"
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                disabled={loading}
+              >
+                <option value="active">Activa</option>
+                <option value="cancelled">Cancelada</option>
+                <option value="completed">Completada</option>
+              </select>
+              <p className="field-hint">
+                Las campañas inactivas no aparecerán en la búsqueda pública
+              </p>
+            </div>
           </div>
 
           <div className="form-section">
@@ -292,7 +453,7 @@ export default function CreateCampaignPage() {
                 name="idLocacion"
                 value={formData.idLocacion}
                 onChange={handleChange}
-                disabled={loading || loadingLocaciones}
+                disabled={loading}
                 required
               >
                 <option value="">Selecciona una ubicación...</option>
@@ -305,9 +466,6 @@ export default function CreateCampaignPage() {
                   );
                 })}
               </select>
-              <p className="field-hint">
-                Si no encuentras la ubicación, <Link href="/admin/locations/create" target="_blank" style={{ color: 'var(--pulso-red)', fontWeight: 600 }}>créala primero aquí</Link>
-              </p>
             </div>
           </div>
 
@@ -327,7 +485,6 @@ export default function CreateCampaignPage() {
                     name="fechaInicio"
                     value={formData.fechaInicio}
                     onChange={handleChange}
-                    min={new Date().toISOString().split('T')[0]}
                     disabled={loading}
                     required
                   />
@@ -363,7 +520,7 @@ export default function CreateCampaignPage() {
                     name="fechaFin"
                     value={formData.fechaFin}
                     onChange={handleChange}
-                    min={formData.fechaInicio || new Date().toISOString().split('T')[0]}
+                    min={formData.fechaInicio}
                     disabled={loading}
                     required
                   />
@@ -387,15 +544,37 @@ export default function CreateCampaignPage() {
             </div>
           </div>
 
-          <div className="form-actions">
-            <Link href="/admin/campaigns">
-              <button type="button" className="btn-ghost" disabled={loading}>
-                Cancelar
+          <div className="form-actions" style={{ justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button 
+                type="button" 
+                className="btn-danger" 
+                onClick={handleDelete}
+                disabled={loading}
+              >
+                Eliminar
               </button>
-            </Link>
-            <button type="submit" className="btn-red" disabled={loading}>
-              {loading ? 'Creando campaña...' : 'Crear campaña'}
-            </button>
+              {formData.status === 'active' && (
+                <button 
+                  type="button" 
+                  className="btn-warning" 
+                  onClick={handleCancel}
+                  disabled={loading}
+                >
+                  Cancelar campaña
+                </button>
+              )}
+            </div>
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <Link href="/admin/campaigns">
+                <button type="button" className="btn-ghost" disabled={loading}>
+                  Volver
+                </button>
+              </Link>
+              <button type="submit" className="btn-red" disabled={loading}>
+                {loading ? 'Guardando cambios...' : 'Guardar cambios'}
+              </button>
+            </div>
           </div>
         </form>
       </div>

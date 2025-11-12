@@ -17,15 +17,15 @@ export function Navigation({ userRole }: NavigationProps) {
     return (
         <nav>
 
-            
+
             {isAdmin ? (
                 <>
-                <Link
-                href="/admin"
-                className={isActive('/') ? 'active' : ''}
-            >
-                Inicio
-            </Link>
+                    <Link
+                        href="/admin"
+                        className={isActive('/') ? 'active' : ''}
+                    >
+                        Inicio
+                    </Link>
                     <Link
                         href="/admin/campaigns/create"
                         className={isActive('/admin/campaigns/create') ? 'active' : ''}
@@ -39,6 +39,18 @@ export function Navigation({ userRole }: NavigationProps) {
                         Campañas activas
                     </Link>
                     <Link
+                        href="/admin/locations/create"
+                        className={isActive('/admin/locations/create') ? 'active' : ''}
+                    >
+                        Crear locacion
+                    </Link>
+                    <Link
+                        href="/admin/locations"
+                        className={isActive('/admin/locations') ? 'active' : ''}
+                    >
+                        Ver locaciones
+                    </Link>
+                    <Link
                         href="/admin/history"
                         className={isActive('/admin/history') ? 'active' : ''}
                     >
@@ -47,12 +59,12 @@ export function Navigation({ userRole }: NavigationProps) {
                 </>
             ) : (
                 <>
-                <Link
-                href="/"
-                className={isActive('/') ? 'active' : ''}
-            >
-                Inicio
-            </Link>
+                    <Link
+                        href="/"
+                        className={isActive('/') ? 'active' : ''}
+                    >
+                        Inicio
+                    </Link>
                     <Link
                         href="/campaigns"
                         className={isActive('/campaigns') ? 'active' : ''}

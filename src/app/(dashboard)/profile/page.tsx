@@ -23,18 +23,21 @@ export default async function ProfilePage() {
       puntos,
       nivel (
         nombre,
-        puntaje_minimo
+        puntaje_minimo,
+        orden
       )
     `)
     .eq('id', authUser.id)
     .single();
+
+    console.log({userInfo})
 
   // Count completed donations
   const { count: donationCount } = await supabase
     .from('registro')
     .select('*', { count: 'exact', head: true })
     .eq('id_usuario', authUser.id)
-    .eq('status', 'completada');
+    .eq('status', 'validated');
 
   // Fetch recent donations
   const { data: recentDonations } = await supabase
@@ -53,7 +56,7 @@ export default async function ProfilePage() {
       )
     `)
     .eq('id_usuario', authUser.id)
-    .eq('status', 'completada')
+    .eq('status', 'validated')
     .order('fecha_validacion', { ascending: false })
     .limit(5);
 
@@ -72,16 +75,26 @@ export default async function ProfilePage() {
   const points = userInfo?.puntos || 0;
   const donations = donationCount || 0;
 
+  const {data: nivelData } = await supabase
+  .from('nivel')
+  .select(`
+    puntaje_minimo,
+    nombre
+    `)
+  .eq('orden', userInfo?.nivel?.orden + 1 )
+  .single()
+
+  console.log({nivelData})
+
   // Level info
   const currentLevel = userInfo?.nivel as any;
-  const levelName = currentLevel?.[0]?.nombre || 'Bronce';
-  const levelNumber = levelName.includes('1') ? 1 : levelName.includes('2') ? 2 : levelName.includes('3') ? 3 : levelName.includes('4') ? 4 : 1;
+  const levelNumber = currentLevel?.orden;
   const minPointsForCurrentLevel = currentLevel?.[0]?.puntaje_minimo || 0;
   
   // Next level calculation (assuming 1000 points between levels)
-  const pointsPerLevel = 1000;
-  const nextLevelPoints = (levelNumber) * pointsPerLevel;
-  const progressPercentage = Math.min(((points - minPointsForCurrentLevel) / pointsPerLevel) * 100, 100);
+
+  const nextLevelPoints = nivelData?.puntaje_minimo
+  const progressPercentage = Math.min((points * 100) / nextLevelPoints, 100);
 
   // Next donation date
   const nextDate = userInfo?.next_date 
