@@ -95,7 +95,7 @@ export default async function CampaignDetailPage({
 
   const { data: existingRegistration } = await supabase
     .from('registro')
-    .select('id, status')
+    .select('id, status, validation_code')
     .eq('id_usuario', user.id)
     .eq('id_campana', typedCampaign.id)
     .maybeSingle();
@@ -259,7 +259,7 @@ export default async function CampaignDetailPage({
 
           {typedCampaign.descripcion && (
             <div className="info-section full-width">
-              <h2>📋 Descripción</h2>
+              <h2>Descripción</h2>
               <p className="description">{typedCampaign.descripcion}</p>
             </div>
           )}
@@ -268,7 +268,7 @@ export default async function CampaignDetailPage({
         {/* Eligibility check */}
         {!isEligible && userInfo?.next_date && (
           <div className="warning-card">
-            <h3>⚠️ No puedes donar en esta fecha</h3>
+            <h3>No puedes donar en esta fecha</h3>
             <p>
               Podrás volver a donar a partir del{' '}
               <strong>
@@ -285,9 +285,9 @@ export default async function CampaignDetailPage({
         {/* Registration status or button */}
         {existingRegistration ? (
           <div className="registration-status">
-            <div className="status-badge">✓ Ya estás inscrito</div>
+            <div className="status-badge">Codigo: {existingRegistration.validation_code}</div>
             <p className="status-text">
-              Estado: <strong>{existingRegistration.status}</strong>
+              ¡Ya te encuentras inscrito! Guarda este codigo para validar tu participación.
             </p>
           </div>
         ) : isEligible ? (

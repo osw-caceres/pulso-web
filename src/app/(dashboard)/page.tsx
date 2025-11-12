@@ -31,6 +31,7 @@ export default async function DashboardPage() {
     .select(`
       status,
       campana (
+      id,
         tipo,
         componente,
         descripcion,
@@ -61,6 +62,8 @@ export default async function DashboardPage() {
       const locacionArray = campaign.locacion;
       const locacion = Array.isArray(locacionArray) && locacionArray.length > 0 ? locacionArray[0] : null;
       
+      
+
       const fechaInicio = new Date(campaign.fecha_inicio);
       const fechaFin = new Date(campaign.fecha_fin);
       
@@ -81,7 +84,8 @@ export default async function DashboardPage() {
         })}`,
         location: locacion?.direccion || 'Ubicación por confirmar',
         donationType: campaign.componente || campaign.tipo || 'Sangre total',
-        status: registration.status || 'Inscrita'
+        status: registration.status || 'Inscrita',
+        id: campaign.id
       };
     } else if (campaignArray && !Array.isArray(campaignArray)) {
       // In case Supabase returns it as a single object
@@ -109,9 +113,12 @@ export default async function DashboardPage() {
         })}`,
         location: locacion?.direccion || 'Ubicación por confirmar',
         donationType: campaign.componente || campaign.tipo || 'Sangre total',
-        status: registration.status || 'Inscrita'
+        status: registration.status || 'Inscrita',
+        id: campaign.id
       };
     }
+
+    console.log({nextCampaign})
   }
 
   return (
@@ -141,7 +148,7 @@ export default async function DashboardPage() {
           <div>{nextCampaign.date} · {nextCampaign.time}</div>
           <div>{nextCampaign.location}</div>
           <div>Tipo de donación: <span className="pill">{nextCampaign.donationType}</span></div>
-          <button className="btn">Ver detalles</button>
+          <Link href={`/campaigns/${nextCampaign.id}`}><button className="btn" type="button">Ver detalles</button></Link>
         </section>
       ) : (
         <section className="card">

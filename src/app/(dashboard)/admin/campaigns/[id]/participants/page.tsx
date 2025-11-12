@@ -198,7 +198,7 @@ export default function ParticipantsPage({ params }: { params: { id: string } })
         .single();
 
       if (fetchError || !registro) {
-        setModalError('❌ Código incorrecto. Verifica e intenta nuevamente.');
+        setModalError('Código incorrecto. Verifica e intenta nuevamente.');
         setValidating(null);
         return;
       }
@@ -226,6 +226,20 @@ export default function ParticipantsPage({ params }: { params: { id: string } })
         return;
       }
 
+      const today = new Date();
+      const nextDate = new Date(today);
+      nextDate.setDate(today.getDate() + 56)
+
+      const { error: userError } = await supabase
+      .from('user_info')
+      .update({
+        next_date: nextDate.toISOString()
+      })
+      .eq('id', user.id)
+
+     await supabase.functions.invoke('points-validator', {
+        body: { points: 10, id: user.id },
+    })
       // Success - close modal and refresh data
       closeValidationModal();
       await fetchData();
@@ -438,7 +452,6 @@ export default function ParticipantsPage({ params }: { params: { id: string } })
                 <th>Tipo de sangre</th>
                 <th>Contacto</th>
                 <th>Fecha de registro</th>
-                {campaignActive && <th>Código de validación</th>}
                 <th>Estado</th>
                 {campaignActive && <th>Acciones</th>}
               </tr>
@@ -474,15 +487,6 @@ export default function ParticipantsPage({ params }: { params: { id: string } })
                     <td className="text-muted">
                       {formatDate(participant.created_at)}
                     </td>
-                    {campaignActive && (
-                      <td>
-                        {participant.validation_code ? (
-                          <code className="validation-code">{participant.validation_code}</code>
-                        ) : (
-                          <span className="text-muted">-</span>
-                        )}
-                      </td>
-                    )}
                     <td>
                       {isValidated ? (
                         <div className="status-cell">
@@ -496,7 +500,7 @@ export default function ParticipantsPage({ params }: { params: { id: string } })
                       ) : isCancelled ? (
                         <span className="status-badge cancelled">✕ Cancelado</span>
                       ) : (
-                        <span className="status-badge pending">⏱ Pendiente</span>
+                        <span className="status-badge pending">Pendiente</span>
                       )}
                     </td>
                     {campaignActive && (
@@ -557,13 +561,13 @@ export default function ParticipantsPage({ params }: { params: { id: string } })
                     value={validationCode}
                     onChange={handleCodeChange}
                     placeholder="EJ. X9A7Q2L1"
-                    maxLength={8}
+                    maxLength={4}
                     autoFocus
                     autoComplete="off"
                     disabled={validating === selectedParticipant.id}
                   />
                   <p className="modal-hint">
-                    Ingresa el código de 8 caracteres del participante
+                    Ingresa el código de 4 caracteres del participante
                   </p>
                 </div>
 

@@ -30,7 +30,7 @@ interface Campaign {
   locacion: Locacion | null;
 }
 
-const BLOOD_TYPES = ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'];
+const BLOOD_TYPES = ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'PLAQUETAS', 'PLASMA'];
 
 export default function CampaignsPage() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
@@ -118,13 +118,12 @@ export default function CampaignsPage() {
       );
     }
 
-    if (selectedCity.trim()) {
-      const city = selectedCity.toLowerCase();
-      filtered = filtered.filter(c => c.locacion?.direccion?.toLowerCase().includes(city));
-    }
-
     if (sortBy === 'date') {
       filtered.sort((a, b) => new Date(a.fecha_inicio).getTime() - new Date(b.fecha_inicio).getTime());
+    }
+
+    if(selectedBloodTypes.size > 0){
+      filtered = filtered.filter(c => selectedBloodTypes.has(c.componente))
     }
 
     setFilteredCampaigns(filtered);

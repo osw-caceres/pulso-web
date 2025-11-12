@@ -13,6 +13,7 @@ interface Registration {
 }
 
 interface Campaign {
+  nombre: string;
   tipo: string;
   componente: string;
   fecha_inicio: string;
@@ -57,6 +58,7 @@ export default function HistoryPage() {
           fecha_validacion,
           campana (
             tipo,
+            nombre,
             componente,
             fecha_inicio,
             locacion (
@@ -67,6 +69,8 @@ export default function HistoryPage() {
         `)
         .eq('id_usuario', user.id)
         .order('created_at', { ascending: false });
+
+        console.log({data})
 
       if (error) {
         console.error('Error fetching history:', error);
@@ -179,8 +183,8 @@ export default function HistoryPage() {
                 </thead>
                 <tbody>
                   {currentItems.map((registration) => {
-                    const campaign = registration.campaña?.[0];
-                    const location = campaign?.locacion?.[0];
+                    const campaign = registration.campana;
+                    const location = campaign?.locacion;
                     
                     const displayDate = registration.fecha_validacion 
                       ? formatDate(registration.fecha_validacion)
@@ -189,7 +193,7 @@ export default function HistoryPage() {
                     return (
                       <tr key={registration.id}>
                         <td>{displayDate}</td>
-                        <td>{location?.nombre || 'Campaña de donación'}</td>
+                        <td>{campaign?.nombre || 'Campaña de donación'}</td>
                         <td>{location?.direccion || 'N/A'}</td>
                         <td>
                           <span className="pill">
