@@ -44,7 +44,7 @@ export default function LoginPage() {
       if (userData.user) {
         // Redirect to dashboard after successful login
 
-        const route = userInfo?.role === 'admin' ? '/admin' : '/';
+        const route = userInfo?.role === 'admin' ? '/admin/campaigns' : '/';
         router.push(route);
         router.refresh();
       }
