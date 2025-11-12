@@ -121,7 +121,7 @@ export default function CompleteProfilePage() {
       // Insert user profile
       const { error: insertError } = await supabase
         .from('user_info')
-        .insert({
+        .update({
           id: userId,
           name: data.name,
           last_name: data.lastName,
@@ -135,7 +135,8 @@ export default function CompleteProfilePage() {
           role: 'user',
           status: 'active',
           is_complete: true, // Mark profile as complete
-        });
+        })
+        .eq('id', userId);
 
       if (insertError) {
         console.error('Insert error:', insertError);
